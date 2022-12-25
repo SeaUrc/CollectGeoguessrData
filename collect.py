@@ -34,7 +34,8 @@ for x in range(2):
     while (current_address == driver.find_element(By.ID, "address").text):
         time.sleep(1)
     # take_sc(str(x+1))
-    print(driver.find_element(By.XPATH, "//a[@class='gm-iv-marker-link']").get_attribute('href'))
+    google_address = driver.find_element(By.XPATH, "//a[@class='gm-iv-marker-link']").get_attribute('href')
+    lat, long = address2latlong(google_address)
     time.sleep(1)
     button.click()
 
