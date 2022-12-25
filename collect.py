@@ -24,15 +24,16 @@ def take_sc(x):
     share.click()
     time.sleep(1)
     im = ImageGrab.grab().convert('RGB')
-    im.save(x + '.jpg')
+    im.save('imgs/' + x + '.jpg')
     time.sleep(1)
     share.click()
+
 
 for x in range(2):
     while (current_address == driver.find_element(By.ID, "address").text):
         time.sleep(1)
-    current_address = driver.find_element(By.ID, "address").text
-    take_sc(str(x+1))
+    # take_sc(str(x+1))
+    print(driver.find_element(By.XPATH, "//a[@class='gm-iv-marker-link']").get_attribute('href'))
     time.sleep(1)
     button.click()
 
