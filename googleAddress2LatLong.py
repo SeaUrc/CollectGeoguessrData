@@ -25,5 +25,6 @@ def address2latlong(x):
 
     return lat, long
 
-x = address2latlong("https://www.google.com/maps/@43.37433505123419,26.195611949226485,13z?hl=en-US&gl=US")
-print(x)
+if __name__=="__main__":
+    x = address2latlong("https://www.google.com/maps/@43.37433505123419,26.195611949226485,13z?hl=en-US&gl=US")
+    print(x)
