@@ -4,7 +4,8 @@ import pyautogui
 import pyperclip
 import time
 from PIL import Image
-import os
+import os, sys
+import csv
 
 
 """ PATH = "/Users/nick/chromedriver"
@@ -21,27 +22,32 @@ google_address = driver.find_element(By.XPATH, "//div[@class='gm-iv-address-link
  """
 pyautogui.PAUSE = 1
 
+def get_immediate_subdirectories(a_dir):
+    return [name for name in os.listdir(a_dir)
+            if os.path.isdir(os.path.join(a_dir, name))]
+
 def share():
-    pyautogui.moveTo(370, 167)
+    pyautogui.moveTo(370, 167) #move to share button
     pyautogui.click()
 
 def getShare():
-    pyautogui.moveTo(170, 312)
+    pyautogui.moveTo(170, 308) #move to share link
     pyautogui.click()
     pyautogui.rightClick()
-    pyautogui.moveTo(270, 354)
+    pyautogui.moveTo(270, 354) #move to right click + copy button
     pyautogui.click()
 
 def go():
-    pyautogui.moveTo(456, 164)
+    pyautogui.moveTo(456, 164) #move to go button
     pyautogui.click()
 
 def screenshot():
     im = pyautogui.screenshot(region=(0,388, 2880, 1202))
     return im.convert('RGB')
 
-def take_screenshots(lat, long, x, y, z, iter):
-    save_dir = "./imgs/" + str(iter) + "/"
+def take_screenshots(lat, long, x, y, z):
+    starting_index = max([eval(i) for i in get_immediate_subdirectories('./imgs/')])+1 #gets list of all sub dirs, converts str->int, gets max
+    save_dir = "./imgs/" + str(starting_index) + "/"                                           
     try:
         os.mkdir(save_dir)
     except:
@@ -51,7 +57,7 @@ def take_screenshots(lat, long, x, y, z, iter):
     for i in range(3):
         x += 90
         url = 'http://www.mapcrunch.com/p/'+ str(lat) + '_' + str(long) + '_' + str(x) + '_' + str(y) + '_' + str(z)
-        pyautogui.moveTo(223, 61)
+        pyautogui.moveTo(223, 61) #move to address bar
         pyautogui.click()
         pyautogui.write(url)
         pyautogui.press('enter')
@@ -62,19 +68,31 @@ def take_screenshots(lat, long, x, y, z, iter):
 def main():
     time.sleep(2)
     print(pyautogui.size())
+    file = open('latLong.csv', 'a')
+    writer = csv.writer(file)
+    share()
+    getShare()
+    share()
+    go()
+    copied = pyperclip.paste() # get init address
 
-    for i in range(1):
+    for i in range(10):
         share()
         getShare()
         share()
+        if copied == pyperclip.paste(): #check if copied, if not exit
+            print(i)
+            sys.exit("did not copy . . . quitting")
 
         address = pyperclip.paste()
         truncated_start_address = address.split('/')[-1]
         address_info_str = truncated_start_address.split('_')
-        address_info = [eval(i) for i in address_info_str]
-
-        take_screenshots(address_info[0], address_info[1], address_info[2], address_info[3], address_info[4], i)
+        address_info = [eval(i) for i in address_info_str] # convert str array to int array
+        writer.writerow([address_info[0], address_info[1]])
+        time.sleep(1)
+        take_screenshots(address_info[0], address_info[1], address_info[2], address_info[3], address_info[4])
         go()
-
+        
+    file.close()
 if __name__ == "__main__":
     main()
