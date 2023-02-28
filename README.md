@@ -1,1 +1,1 @@
-# CollectGeoguessrData
+# Geoguessr data macro
